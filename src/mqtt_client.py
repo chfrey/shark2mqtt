@@ -443,6 +443,7 @@ class MqttClient:
           matrix_clean:  {room: "Kitchen"}
           clean_rooms:   {rooms: ["Kitchen", "Den"], mode: "UserRoom",
                           clean_count: 1, clean_type: "dry"}
+          vac_and_mop:   {} (starts vac+mop mode on entire house)
         """
         import json as _json
         data = _json.loads(payload)
@@ -524,6 +525,11 @@ class MqttClient:
                 clean_count=params.get("clean_count", 1),
                 mode=params.get("mode", "UserRoom"), use_v3=use_v3,
             )
+
+        elif command == "vac_and_mop":
+            # Start vac+mop mode (applies to entire house, no room selection)
+            logger.info("Vac and mop mode requested for %s", device_id)
+            await handler.send_command(device_id, "vac_and_mop")
 
         else:
             logger.info("Forwarding send_command '%s' as generic command", command)
